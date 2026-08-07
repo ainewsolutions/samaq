@@ -195,7 +195,7 @@ function ItemModal({ item, currency, onClose, onAdd }) {
                           onChange={() => toggleChoice(g, c.id)}
                           className="accent-[#006994]"
                         />
-                        {c.label}
+                        <span className="font-bold">{c.label}</span>
                       </span>
                       {c.priceDelta ? <span className="text-xs text-gray-500">+{c.priceDelta} {currency}</span> : null}
                     </label>

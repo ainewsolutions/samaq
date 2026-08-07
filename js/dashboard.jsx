@@ -349,7 +349,12 @@ function DashboardItems({ categoryId, items, allItems, setItems }) {
             {it.image && <img src={it.image} className="w-9 h-9 rounded-lg object-cover" alt="" />}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold truncate">{it.name || "(بدون اسم)"}</p>
-              <p className="text-xs text-gray-400">{Number(it.price).toFixed(2)} ر.س</p>
+              <p className="text-xs text-gray-400">
+                {Number(it.price).toFixed(2)} ر.س
+                {it.options && it.options.length > 0 && it.options[0].choices?.length > 0 && (
+                  <span className="text-samaq-blue font-bold"> · {it.options[0].choices.length} إضافات</span>
+                )}
+              </p>
             </div>
             <button onClick={() => setEditing({ ...it, addons: optionsToAddons(it.options) })} className="text-gray-400 hover:text-samaq-blue"><IconEdit className="w-4 h-4" /></button>
             <label className="inline-flex items-center cursor-pointer">
