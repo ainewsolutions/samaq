@@ -248,7 +248,21 @@ function DashboardCategories({ categories, setCategories, items, setItems, selec
 }
 
 function emptyItem(categoryId, order) {
-  return { id: "", categoryId, name: "", description: "", price: 0, image: "", available: true, order };
+  return { id: "", categoryId, name: "", description: "", price: 0, image: "", options: [], available: true, order };
+}
+
+// يحوّل بنية options الكاملة لقائمة بسيطة {label, priceDelta} تتعامل معاها الواجهة بسهولة
+function optionsToAddons(options) {
+  if (!options || !options.length || !options[0].choices) return [];
+  return options[0].choices.map((c) => ({ label: c.label, priceDelta: c.priceDelta }));
+}
+function addonsToOptions(addons) {
+  const valid = (addons || []).filter((a) => a.label && a.label.trim());
+  if (!valid.length) return [];
+  return [{
+    id: "addons", title: "إضافات", required: false, multiple: true,
+    choices: valid.map((a, i) => ({ id: "c" + i, label: a.label.trim(), priceDelta: parseFloat(a.priceDelta) || 0 })),
+  }];
 }
 
 function DashboardItems({ categoryId, items, allItems, setItems }) {
@@ -289,14 +303,29 @@ function DashboardItems({ categoryId, items, allItems, setItems }) {
     persist(items.filter((i) => i.id !== id));
   }
   function startAdd() {
-    setEditing(emptyItem(categoryId, items.length + 1));
+    setEditing({ ...emptyItem(categoryId, items.length + 1), addons: [] });
   }
   function saveEdit() {
     if (!editing.name.trim()) return;
-    const exists = items.some((i) => i.id && i.id === editing.id);
-    const next = exists ? items.map((i) => (i.id === editing.id ? editing : i)) : [...items, editing];
+    const { addons, ...rest } = editing;
+    const itemToSave = { ...rest, options: addonsToOptions(addons) };
+    const exists = items.some((i) => i.id && i.id === itemToSave.id);
+    const next = exists ? items.map((i) => (i.id === itemToSave.id ? itemToSave : i)) : [...items, itemToSave];
     persist(next);
     setEditing(null);
+  }
+  function updateAddon(index, field, value) {
+    setEditing((prev) => {
+      const addons = [...(prev.addons || [])];
+      addons[index] = { ...addons[index], [field]: value };
+      return { ...prev, addons };
+    });
+  }
+  function addAddonRow() {
+    setEditing((prev) => ({ ...prev, addons: [...(prev.addons || []), { label: "", priceDelta: 0 }] }));
+  }
+  function removeAddonRow(index) {
+    setEditing((prev) => ({ ...prev, addons: (prev.addons || []).filter((_, i) => i !== index) }));
   }
 
   return (
@@ -322,7 +351,7 @@ function DashboardItems({ categoryId, items, allItems, setItems }) {
               <p className="text-sm font-bold truncate">{it.name || "(بدون اسم)"}</p>
               <p className="text-xs text-gray-400">{Number(it.price).toFixed(2)} ر.س</p>
             </div>
-            <button onClick={() => setEditing(it)} className="text-gray-400 hover:text-samaq-blue"><IconEdit className="w-4 h-4" /></button>
+            <button onClick={() => setEditing({ ...it, addons: optionsToAddons(it.options) })} className="text-gray-400 hover:text-samaq-blue"><IconEdit className="w-4 h-4" /></button>
             <label className="inline-flex items-center cursor-pointer">
               <input type="checkbox" checked={it.available} onChange={() => toggleAvailable(it.id)} className="sr-only peer" />
               <div className="w-9 h-5 bg-gray-200 peer-checked:bg-samaq-green rounded-full relative transition">
@@ -352,6 +381,38 @@ function DashboardItems({ categoryId, items, allItems, setItems }) {
                 <input type="checkbox" checked={editing.available} onChange={(e) => setEditing({ ...editing, available: e.target.checked })} />
                 متاح للطلب
               </label>
+
+              <div className="border-t pt-3">
+                <label className="text-xs font-bold text-gray-500 mb-2 block">
+                  إضافات اختيارية (زي: شوي، قلي، متبل) — العميل يقدر يختار أي عدد منها
+                </label>
+                <div className="flex flex-col gap-2">
+                  {(editing.addons || []).map((a, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input
+                        value={a.label}
+                        onChange={(e) => updateAddon(i, "label", e.target.value)}
+                        placeholder="اسم الإضافة (شوي)"
+                        className="flex-1 border border-gray-200 rounded-lg p-2 text-sm"
+                      />
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={a.priceDelta}
+                        onChange={(e) => updateAddon(i, "priceDelta", e.target.value)}
+                        placeholder="السعر"
+                        className="w-20 border border-gray-200 rounded-lg p-2 text-sm"
+                      />
+                      <button onClick={() => removeAddonRow(i)} className="text-red-300 hover:text-red-500 shrink-0">
+                        <IconTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={addAddonRow} className="text-xs bg-samaq-blue text-white rounded-full px-3 py-1.5 font-bold mt-2">
+                  + إضافة خيار جديد
+                </button>
+              </div>
             </div>
             <div className="flex gap-2 mt-5">
               <button onClick={saveEdit} className="flex-1 bg-samaq-green text-white rounded-xl py-2.5 font-bold">حفظ</button>

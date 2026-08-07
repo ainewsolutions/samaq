@@ -7,32 +7,35 @@ function formatPrice(n, currency) {
   return `${val.toFixed(2)} ${currency || "ر.س"}`;
 }
 
-function categoryEmoji(name) {
+function categoryIconFor(name) {
   const n = String(name || "");
-  if (/سمك|روبيان|بحري/.test(n)) return "🐟";
-  if (/مشروب/.test(n)) return "🥤";
-  if (/صلص/.test(n)) return "🥫";
-  if (/كافيار/.test(n)) return "🖤";
-  if (/مجمد/.test(n)) return "❄️";
-  if (/طبخ|طبي/.test(n)) return "👨‍🍳";
-  return "🍽️";
+  if (/سمك|روبيان|بحري/.test(n)) return IconCatFish;
+  if (/مشروب/.test(n)) return IconCatDrink;
+  if (/صلص/.test(n)) return IconCatSauce;
+  if (/كافيار/.test(n)) return IconCatCaviar;
+  if (/مجمد/.test(n)) return IconCatFrozen;
+  if (/طبخ|طبي/.test(n)) return IconCatChef;
+  return IconCatDefault;
 }
 
 function CategoryTabs({ categories, activeId, onSelect }) {
   return (
     <div className="sticky top-[64px] z-30 bg-[#F7F8F4]/95 backdrop-blur border-b border-[#e7ece8]">
       <div className="max-w-5xl mx-auto px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar">
-        {categories.map((c) => (
-          <button
-            key={c.id}
-            data-active={c.id === activeId}
-            onClick={() => onSelect(c.id)}
-            className="category-pill px-4 py-2 rounded-full text-sm font-bold shrink-0 flex items-center gap-1.5"
-          >
-            <span>{categoryEmoji(c.name)}</span>
-            <span>{c.name}</span>
-          </button>
-        ))}
+        {categories.map((c) => {
+          const Icon = categoryIconFor(c.name);
+          return (
+            <button
+              key={c.id}
+              data-active={c.id === activeId}
+              onClick={() => onSelect(c.id)}
+              className="category-pill px-4 py-2 rounded-full text-sm font-bold shrink-0 flex items-center gap-1.5"
+            >
+              <Icon className="w-4 h-4" />
+              <span>{c.name}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -52,16 +55,16 @@ function ItemImage({ item, className }) {
 function ItemCard({ item, currency, onOpen }) {
   const hasOptions = item.options && item.options.length > 0;
   return (
-    <div className="item-card bg-white rounded-2xl overflow-hidden border border-[#eef1ee] flex sm:flex-col">
-      <div className="relative w-32 sm:w-full shrink-0 bg-[#eef3ee]">
-        <ItemImage item={item} className="w-full h-full sm:h-40 aspect-square sm:aspect-auto object-contain" />
+    <div className="item-card bg-white rounded-2xl overflow-hidden border border-[#eef1ee] flex flex-col">
+      <div className="relative w-full bg-[#eef3ee]">
+        <ItemImage item={item} className="w-full h-48 sm:h-40 object-contain" />
         {!item.available && (
           <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-            <span className="bg-black/80 text-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full">غير متاح حاليًا</span>
+            <span className="bg-black/80 text-white text-xs px-3 py-1 rounded-full">غير متاح حاليًا</span>
           </div>
         )}
       </div>
-      <div className="p-3 flex flex-col gap-1 flex-1 min-w-0">
+      <div className="p-3 flex flex-col gap-1 flex-1">
         <h3 className="font-bold text-[#173a2a] text-sm leading-snug line-clamp-2">{item.name}</h3>
         {item.description && <p className="text-xs text-gray-500 line-clamp-2">{item.description}</p>}
         <div className="mt-auto pt-2 flex items-center justify-between">
@@ -283,7 +286,7 @@ function MenuPage({ categories, items, settings, cart, setCart }) {
               )}
               <h2 className="text-lg font-extrabold text-[#173a2a] mb-3 flex items-center gap-2">
                 <span className="w-1.5 h-5 bg-samaq-gold rounded-full inline-block"></span>
-                <span>{categoryEmoji(cat.name)}</span>
+                {(() => { const Icon = categoryIconFor(cat.name); return <Icon className="w-5 h-5 text-samaq-blue" />; })()}
                 {cat.name}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

@@ -117,3 +117,62 @@ function IconPlay({ className }) {
     </svg>
   );
 }
+
+// ---------- أيقونات التصنيفات (بديل عن الإيموجي عشان تظهر نفس الشكل بالظبط في كل الأجهزة) ----------
+function IconCatFish({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 12c3-4 8-6 12-6 3 0 5 2 6 6-1 4-3 6-6 6-4 0-9-2-12-6z"/>
+      <path d="M15 8v8M21 12l-3-2v4l3-2z" fill="currentColor" stroke="none"/>
+      <circle cx="8" cy="11" r="0.8" fill="currentColor" stroke="none"/>
+    </svg>
+  );
+}
+function IconCatDrink({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 3h10l-1.2 16a2 2 0 0 1-2 1.8h-3.6a2 2 0 0 1-2-1.8L7 3z"/>
+      <path d="M6 8h12"/>
+    </svg>
+  );
+}
+function IconCatSauce({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 3h6v3l2 2v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8l2-2V3z"/>
+      <path d="M7 12h10"/>
+    </svg>
+  );
+}
+function IconCatCaviar({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <ellipse cx="12" cy="12" rx="9" ry="6"/>
+      <ellipse cx="12" cy="12" rx="9" ry="6" strokeDasharray="1.5 2.3"/>
+    </svg>
+  );
+}
+function IconCatFrozen({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+      <path d="M12 2v20M4.5 6l15 12M19.5 6l-15 12"/>
+      <path d="M12 5 9.8 3.5M12 5l2.2-1.5M12 19l-2.2 1.5M12 19l2.2 1.5"/>
+    </svg>
+  );
+}
+function IconCatChef({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 10c0-3 2-5 6-5s6 2 6 5c1.5.3 2.5 1.6 2.5 3 0 1.7-1.3 3-3 3H6.5c-1.7 0-3-1.3-3-3 0-1.4 1-2.7 2.5-3z"/>
+      <path d="M7 16v4h10v-4"/>
+    </svg>
+  );
+}
+function IconCatDefault({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="8"/>
+      <circle cx="12" cy="12" r="3.2"/>
+    </svg>
+  );
+}
