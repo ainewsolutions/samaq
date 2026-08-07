@@ -31,7 +31,13 @@ function Header({ cart, onOpenCart, onGoDashboard }) {
 }
 
 function Footer({ settings }) {
-  const social = settings.socialLinks || {};
+  const social = {
+    whatsapp: settings.socialWhatsapp,
+    facebook: settings.socialFacebook,
+    tiktok: settings.socialTiktok,
+    instagram: settings.socialInstagram,
+    twitter: settings.socialTwitter,
+  };
   return (
     <footer className="no-print bg-[#0b0f0d] text-white pt-10 pb-8 mt-6">
       <div className="max-w-5xl mx-auto px-6 flex flex-col items-center gap-8 text-center">
