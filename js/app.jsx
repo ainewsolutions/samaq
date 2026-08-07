@@ -43,7 +43,7 @@ function App() {
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [theme, setTheme] = useState("light"); // "light" | "dark"
+  const [theme, setTheme] = useState("dark"); // "light" | "dark" — الافتراضي داكن، والعميل يقدر يبدّل
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);

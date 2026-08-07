@@ -11,30 +11,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
-<!-- Tailwind CSS (CDN) -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          "samaq-green": "#118040",
-          "samaq-blue": "#006994",
-          "samaq-gold": "#FFCF40",
-        },
-        fontFamily: { sans: ["Tajawal", "Cairo", "sans-serif"] },
-      },
-    },
-  };
-</script>
-
-<!-- React + Babel (لتشغيل JSX مباشرة في المتصفح، بدون خطوة Build) -->
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-
+<!-- Tailwind مبني مسبقًا (Static) بدل تحميل المكتبة كاملة وتشغيلها -->
+<link rel="stylesheet" href="css/tailwind-built.css" />
 <link rel="stylesheet" href="css/styles.css" />
+
+<!-- React + ReactDOM محفوظين محليًا (مش من CDN خارجي) لسرعة أعلى وموثوقية أفضل -->
+<script src="js/vendor/react.js"></script>
+<script src="js/vendor/react-dom.js"></script>
 </head>
 <body>
 <div id="root"></div>
@@ -43,10 +26,15 @@
 <script src="js/config.js"></script>
 <script src="js/dataService.js"></script>
 
-<!-- Components (JSX) — بيتم تحميلهم وتحويلهم بواسطة Babel standalone
-     يدويًا بالترتيب (loader.js) بدل الفحص التلقائي، عشان نضمن استخدام
-     الـ classic JSX runtime (React.createElement) بدل الـ automatic runtime
-     اللي بيحقن "import" وده مش شغال في سكريبت عادي بره type="module". -->
-<script src="js/loader.js"></script>
+<!-- Components — مبنية مسبقًا (Pre-compiled) من ملفات JSX المصدرية،
+     فمفيش أي تحويل أو ترجمة بتحصل في المتصفح خالص — بيتحمّلوا
+     ويتنفذوا على طول زي أي سكريبت عادي، وده أسرع بكتير. -->
+<script src="js/icons.compiled.js"></script>
+<script src="js/imageUploader.compiled.js"></script>
+<script src="js/menu.compiled.js"></script>
+<script src="js/cart.compiled.js"></script>
+<script src="js/layout.compiled.js"></script>
+<script src="js/dashboard.compiled.js"></script>
+<script src="js/app.compiled.js"></script>
 </body>
 </html>
