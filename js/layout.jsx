@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // SAMAQ — Header & Footer
 // ============================================================
 
@@ -59,7 +59,7 @@ function Footer({ settings }) {
         <div>
           <p className="text-lg font-bold mb-4">حمّل التطبيق</p>
           <div className="flex items-center gap-4 flex-wrap justify-center">
-            
+            <a
               href="https://media-files.tryordersystem.com/tenant/samaq/settings/66434b89aa9d5.jpeg"
               target="_blank"
               rel="noreferrer"
