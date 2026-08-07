@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // SAMAQ — Header & Footer
 // ============================================================
 
@@ -59,9 +59,14 @@ function Footer({ settings }) {
         <div>
           <p className="text-lg font-bold mb-4">حمّل التطبيق</p>
           <div className="flex items-center gap-4 flex-wrap justify-center">
-            <div className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-[10px] leading-tight text-white/70">
+            
+              href="https://media-files.tryordersystem.com/tenant/samaq/settings/66434b89aa9d5.jpeg"
+              target="_blank"
+              rel="noreferrer"
+              className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-[10px] leading-tight text-white/70 hover:bg-white/20 transition"
+            >
               ضريبة القيمة<br />المضافة
-            </div>
+            </a>
             <a href={settings.googlePlayUrl || "#"} target="_blank" rel="noreferrer" className="store-btn">
               <IconPlay className="w-6 h-6" />
               <span className="text-right leading-tight">
