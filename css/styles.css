@@ -1,0 +1,122 @@
+/* ============================================================
+   SAMAQ — Custom Styles
+   الألوان الرسمية من الهوية البصرية:
+   أخضر 118040 / أزرق 006994 / أصفر FFCF40 / أسود 000000 / أبيض FFFFFF
+   ============================================================ */
+
+:root {
+  --samaq-green: #118040;
+  --samaq-green-dark: #0c5c2e;
+  --samaq-blue: #006994;
+  --samaq-blue-dark: #004f70;
+  --samaq-gold: #FFCF40;
+  --samaq-black: #0b0f0d;
+  --samaq-white: #FFFFFF;
+  --samaq-cream: #F7F8F4;
+}
+
+* { -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  font-family: 'Tajawal', 'Cairo', system-ui, sans-serif;
+  background: var(--samaq-cream);
+  color: #1a1a1a;
+  direction: rtl;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar { height: 6px; width: 6px; }
+::-webkit-scrollbar-thumb { background: #c9d2c9; border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Brand utility colors (works alongside Tailwind's arbitrary values,
+   kept as classes too for readability in the JSX) */
+.bg-samaq-green { background-color: var(--samaq-green); }
+.bg-samaq-blue { background-color: var(--samaq-blue); }
+.bg-samaq-gold { background-color: var(--samaq-gold); }
+.text-samaq-green { color: var(--samaq-green); }
+.text-samaq-blue { color: var(--samaq-blue); }
+.text-samaq-gold { color: var(--samaq-gold); }
+.border-samaq-green { border-color: var(--samaq-green); }
+
+.samaq-gradient-header {
+  background: linear-gradient(135deg, var(--samaq-blue) 0%, var(--samaq-blue-dark) 55%, var(--samaq-green-dark) 100%);
+}
+
+.item-image-fallback {
+  background: linear-gradient(160deg, #eaf3ee 0%, #dcebe3 55%, #cfe4d9 100%);
+  position: relative;
+  overflow: hidden;
+}
+.item-image-fallback::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 30% 20%, rgba(0,105,148,0.08), transparent 60%),
+                     radial-gradient(circle at 80% 80%, rgba(17,128,64,0.10), transparent 55%);
+}
+
+.category-pill {
+  transition: all .18s ease;
+  white-space: nowrap;
+}
+.category-pill[data-active="true"] {
+  background: var(--samaq-blue);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0,105,148,.28);
+}
+.category-pill[data-active="false"] {
+  background: #fff;
+  color: #33403a;
+  border: 1px solid #e3e8e4;
+}
+.category-pill[data-active="false"]:hover { border-color: var(--samaq-blue); color: var(--samaq-blue); }
+
+.item-card {
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.item-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(15,40,25,.10); }
+
+.fab-cart {
+  box-shadow: 0 10px 30px rgba(17,128,64,.35);
+}
+
+.slide-in { animation: slideIn .28s ease forwards; }
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.fade-in { animation: fadeIn .2s ease forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.pop-in { animation: popIn .18s ease forwards; }
+@keyframes popIn { from { opacity:0; transform: scale(.96);} to {opacity:1; transform: scale(1);} }
+
+.social-btn {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  background: #ffffff14;
+  border: 1px solid #ffffff26;
+  transition: all .15s ease;
+}
+.social-btn:hover { background: #ffffff26; transform: translateY(-2px); }
+
+.store-btn {
+  display: flex; align-items: center; gap: 10px;
+  background: #000; color: #fff;
+  border-radius: 10px; padding: 8px 16px;
+  border: 1px solid #333;
+  transition: all .15s ease;
+}
+.store-btn:hover { border-color: #666; transform: translateY(-1px); }
+
+.drag-handle { cursor: grab; }
+.drag-handle:active { cursor: grabbing; }
+.drag-over { outline: 2px dashed var(--samaq-blue); outline-offset: 4px; background: #eef7fb; }
+
+input[type="text"], input[type="tel"], input[type="number"], input[type="url"], textarea, select {
+  font-family: inherit;
+}
+
+@media print { .no-print { display: none !important; } }

@@ -1,0 +1,288 @@
+// ============================================================
+// SAMAQ — Menu components: CategoryTabs, ItemCard, ItemModal
+// ============================================================
+
+function formatPrice(n, currency) {
+  const val = Number(n || 0);
+  return `${val.toFixed(2)} ${currency || "ر.س"}`;
+}
+
+function CategoryTabs({ categories, activeId, onSelect }) {
+  return (
+    <div className="sticky top-[64px] z-30 bg-[#F7F8F4]/95 backdrop-blur border-b border-[#e7ece8]">
+      <div className="max-w-5xl mx-auto px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar">
+        {categories.map((c) => (
+          <button
+            key={c.id}
+            data-active={c.id === activeId}
+            onClick={() => onSelect(c.id)}
+            className="category-pill px-4 py-2 rounded-full text-sm font-bold shrink-0"
+          >
+            {c.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ItemImage({ item, className }) {
+  if (item.image) {
+    return <img src={item.image} alt={item.name} className={className} loading="lazy" />;
+  }
+  return (
+    <div className={`item-image-fallback flex items-center justify-center ${className}`}>
+      <IconFishWatermark className="w-10 h-10 text-samaq-blue opacity-40" />
+    </div>
+  );
+}
+
+function ItemCard({ item, currency, onOpen }) {
+  const hasOptions = item.options && item.options.length > 0;
+  return (
+    <div className="item-card bg-white rounded-2xl overflow-hidden border border-[#eef1ee] flex flex-col">
+      <div className="relative">
+        <ItemImage item={item} className="w-full h-32 sm:h-36 object-cover" />
+        {!item.available && (
+          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+            <span className="bg-black/80 text-white text-xs px-3 py-1 rounded-full">غير متاح حاليًا</span>
+          </div>
+        )}
+      </div>
+      <div className="p-3 flex flex-col gap-1 flex-1">
+        <h3 className="font-bold text-[#173a2a] text-sm leading-snug line-clamp-2">{item.name}</h3>
+        {item.description && <p className="text-xs text-gray-500 line-clamp-2">{item.description}</p>}
+        <div className="mt-auto pt-2 flex items-center justify-between">
+          <span className="text-samaq-green font-extrabold text-sm">{formatPrice(item.price, currency)}</span>
+          <button
+            disabled={!item.available}
+            onClick={() => onOpen(item)}
+            className="bg-samaq-blue disabled:bg-gray-300 text-white text-xs font-bold rounded-full px-3 py-1.5 hover:brightness-110 transition"
+          >
+            {hasOptions ? "اختر" : "إضافة"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ItemModal({ item, currency, onClose, onAdd }) {
+  const [qty, setQty] = useState(1);
+  const [selections, setSelections] = useState({}); // groupId -> choiceId | [choiceId,...]
+  const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    const init = {};
+    (item.options || []).forEach((g) => {
+      if (g.required && g.choices.length) {
+        init[g.id] = g.multiple ? [g.choices[0].id] : g.choices[0].id;
+      }
+    });
+    setSelections(init);
+  }, [item]);
+
+  const extra = useMemo(() => {
+    let sum = 0;
+    (item.options || []).forEach((g) => {
+      const sel = selections[g.id];
+      if (!sel) return;
+      const ids = Array.isArray(sel) ? sel : [sel];
+      ids.forEach((cid) => {
+        const choice = g.choices.find((c) => c.id === cid);
+        if (choice) sum += Number(choice.priceDelta || 0);
+      });
+    });
+    return sum;
+  }, [selections, item]);
+
+  const unitPrice = Number(item.price || 0) + extra;
+  const totalPrice = unitPrice * qty;
+
+  const missingRequired = (item.options || []).some((g) => {
+    if (!g.required) return false;
+    const sel = selections[g.id];
+    return !sel || (Array.isArray(sel) && sel.length === 0);
+  });
+
+  function toggleChoice(group, choiceId) {
+    setSelections((prev) => {
+      const next = { ...prev };
+      if (group.multiple) {
+        const cur = new Set(next[group.id] || []);
+        cur.has(choiceId) ? cur.delete(choiceId) : cur.add(choiceId);
+        next[group.id] = Array.from(cur);
+      } else {
+        next[group.id] = choiceId;
+      }
+      return next;
+    });
+  }
+
+  function handleAdd() {
+    if (missingRequired) return;
+    const optionsSummary = (item.options || [])
+      .map((g) => {
+        const sel = selections[g.id];
+        if (!sel) return null;
+        const ids = Array.isArray(sel) ? sel : [sel];
+        const labels = ids.map((cid) => g.choices.find((c) => c.id === cid)?.label).filter(Boolean);
+        return labels.length ? `${g.title}: ${labels.join("، ")}` : null;
+      })
+      .filter(Boolean);
+
+    onAdd({
+      lineId: `${item.id}_${Date.now()}`,
+      itemId: item.id,
+      name: item.name,
+      unitPrice,
+      qty,
+      optionsSummary,
+      notes: notes.trim(),
+      totalPrice,
+    });
+    onClose();
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 fade-in" onClick={onClose}>
+      <div className="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto pop-in" onClick={(e) => e.stopPropagation()}>
+        <div className="relative">
+          <ItemImage item={item} className="w-full h-44 object-cover" />
+          <button onClick={onClose} className="absolute top-3 left-3 bg-white/90 rounded-full p-2 shadow">
+            <IconClose className="w-4 h-4 text-gray-700" />
+          </button>
+        </div>
+        <div className="p-5 flex flex-col gap-4">
+          <div>
+            <h2 className="text-lg font-extrabold text-[#173a2a]">{item.name}</h2>
+            {item.description && <p className="text-sm text-gray-500 mt-1">{item.description}</p>}
+            <p className="text-samaq-green font-bold mt-2">{formatPrice(item.price, currency)}</p>
+          </div>
+
+          {(item.options || []).map((g) => (
+            <div key={g.id} className="border-t pt-3">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-bold text-sm text-[#173a2a]">{g.title}</h4>
+                {g.required && <span className="text-[10px] bg-samaq-gold/30 text-[#7a5b00] px-2 py-0.5 rounded-full font-bold">مطلوب</span>}
+              </div>
+              <div className="flex flex-col gap-2">
+                {g.choices.map((c) => {
+                  const sel = selections[g.id];
+                  const checked = Array.isArray(sel) ? sel.includes(c.id) : sel === c.id;
+                  return (
+                    <label key={c.id} className={`flex items-center justify-between border rounded-xl px-3 py-2 cursor-pointer text-sm ${checked ? "border-samaq-blue bg-blue-50" : "border-gray-200"}`}>
+                      <span className="flex items-center gap-2">
+                        <input
+                          type={g.multiple ? "checkbox" : "radio"}
+                          name={g.id}
+                          checked={checked}
+                          onChange={() => toggleChoice(g, c.id)}
+                          className="accent-[#006994]"
+                        />
+                        {c.label}
+                      </span>
+                      {c.priceDelta ? <span className="text-xs text-gray-500">+{c.priceDelta} {currency}</span> : null}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          <div className="border-t pt-3">
+            <h4 className="font-bold text-sm text-[#173a2a] mb-2">ملاحظات (اختياري)</h4>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+              placeholder="مثال: بدون فلفل حار"
+              className="w-full border border-gray-200 rounded-xl p-2 text-sm focus:outline-none focus:border-samaq-blue"
+            />
+          </div>
+
+          <div className="flex items-center justify-between border-t pt-3">
+            <span className="font-bold text-sm text-[#173a2a]">الكمية</span>
+            <div className="flex items-center gap-3">
+              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                <IconMinus className="w-4 h-4" />
+              </button>
+              <span className="w-6 text-center font-bold">{qty}</span>
+              <button onClick={() => setQty((q) => q + 1)} className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                <IconPlus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <button
+            disabled={missingRequired}
+            onClick={handleAdd}
+            className="bg-samaq-green disabled:bg-gray-300 text-white font-extrabold rounded-2xl py-3 flex items-center justify-center gap-2 hover:brightness-110 transition"
+          >
+            إضافة للسلة — {formatPrice(totalPrice, currency)}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MenuPage({ categories, items, settings, cart, setCart }) {
+  const activeCategories = categories.filter((c) => c.active).sort((a, b) => a.order - b.order);
+  const [activeCat, setActiveCat] = useState(activeCategories[0]?.id);
+  const [openItem, setOpenItem] = useState(null);
+  const sectionRefs = useRef({});
+
+  useEffect(() => {
+    if (!activeCat && activeCategories.length) setActiveCat(activeCategories[0].id);
+  }, [activeCategories]);
+
+  function scrollToCategory(id) {
+    setActiveCat(id);
+    const el = sectionRefs.current[id];
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  }
+
+  function addToCart(line) {
+    setCart((prev) => [...prev, line]);
+  }
+
+  return (
+    <div>
+      <CategoryTabs categories={activeCategories} activeId={activeCat} onSelect={scrollToCategory} />
+      <div className="max-w-5xl mx-auto px-3 pb-28">
+        {activeCategories.map((cat) => {
+          const catItems = items
+            .filter((i) => i.categoryId === cat.id)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+          if (!catItems.length) return null;
+          return (
+            <section key={cat.id} ref={(el) => (sectionRefs.current[cat.id] = el)} className="pt-6">
+              {cat.bannerImage && (
+                <div className="w-full aspect-[21/6] sm:aspect-[21/5] rounded-2xl overflow-hidden mb-3">
+                  <img src={cat.bannerImage} alt={cat.name} className="w-full h-full object-cover" loading="lazy" />
+                </div>
+              )}
+              <h2 className="text-lg font-extrabold text-[#173a2a] mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-5 bg-samaq-gold rounded-full inline-block"></span>
+                {cat.name}
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {catItems.map((it) => (
+                  <ItemCard key={it.id} item={it} currency={settings.currency} onOpen={setOpenItem} />
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+
+      {openItem && (
+        <ItemModal item={openItem} currency={settings.currency} onClose={() => setOpenItem(null)} onAdd={addToCart} />
+      )}
+    </div>
+  );
+}
