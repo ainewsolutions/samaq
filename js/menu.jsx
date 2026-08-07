@@ -56,7 +56,7 @@ function ItemCard({ item, currency, onOpen }) {
   const hasOptions = item.options && item.options.length > 0;
   return (
     <div className="item-card bg-white rounded-2xl overflow-hidden border border-[#eef1ee] flex flex-col">
-      <div className="relative w-full bg-[#eef3ee]">
+      <div className="relative w-full bg-[#eef3ee] cursor-pointer" onClick={() => item.available && onOpen(item)}>
         <ItemImage item={item} className="w-full h-48 sm:h-40 object-contain" />
         {!item.available && (
           <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
