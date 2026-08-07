@@ -2,24 +2,29 @@
 // SAMAQ — Header & Footer
 // ============================================================
 
-function Header({ cart, onOpenCart }) {
+function Header({ cart, onOpenCart, theme, onToggleTheme }) {
   const count = cartCount(cart);
   return (
-    <header className="samaq-gradient-header sticky top-0 z-40 h-16 flex items-center px-4 shadow-md">
+    <header className="samaq-header sticky top-0 z-40 h-16 flex items-center px-4">
       <div className="max-w-5xl mx-auto w-full flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img src="assets/samaq-logo.png" alt="SAMAQ" className="h-11 w-auto drop-shadow" />
-          <div className="text-white leading-tight hidden sm:block">
-            <p className="font-extrabold text-sm">سمك | SAMAQ</p>
-            <p className="text-[11px] opacity-80">منتجات بحرية طازجة</p>
+          <img src="assets/samaq-logo.png" alt="SAMAQ" className="h-10 w-auto" />
+          <div className="leading-tight hidden sm:block">
+            <p className="samaq-logo-text font-extrabold text-base">سمك | SAMAQ</p>
+            <p className="text-[11px] samaq-text-muted">منتجات بحرية طازجة</p>
           </div>
         </div>
-        <button onClick={onOpenCart} className="relative bg-white/15 hover:bg-white/25 transition rounded-full p-2.5">
-          <IconCart className="w-5 h-5 text-white" />
-          {count > 0 && (
-            <span className="absolute -top-1 -left-1 bg-samaq-gold text-[#173a2a] text-[10px] font-extrabold rounded-full w-4 h-4 flex items-center justify-center">{count}</span>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={onToggleTheme} className="theme-toggle" title="الوضع الداكن/الفاتح">
+            {theme === "dark" ? "☀️" : "🌙"}
+          </button>
+          <button onClick={onOpenCart} className="theme-toggle relative" style={{ color: "var(--primary-color)" }}>
+            <IconCart className="w-5 h-5" />
+            {count > 0 && (
+              <span className="absolute -top-1 -left-1 bg-samaq-gold text-[#173a2a] text-[10px] font-extrabold rounded-full w-4 h-4 flex items-center justify-center">{count}</span>
+            )}
+          </button>
+        </div>
       </div>
     </header>
   );

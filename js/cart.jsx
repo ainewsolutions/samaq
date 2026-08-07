@@ -19,7 +19,7 @@ function FloatingCartButton({ cart, currency, onOpen }) {
     >
       <span className="relative">
         <IconCart className="w-5 h-5" />
-        <span className="absolute -top-2 -left-2 bg-samaq-gold text-[#173a2a] text-[10px] font-extrabold rounded-full w-4 h-4 flex items-center justify-center">{count}</span>
+        <span className="absolute -top-2 -left-2 bg-samaq-gold text-main text-[10px] font-extrabold rounded-full w-4 h-4 flex items-center justify-center">{count}</span>
       </span>
       <span className="font-bold text-sm">{formatPrice(cartTotal(cart), currency)}</span>
       <span className="text-xs opacity-90 hidden sm:inline">عرض السلة</span>
@@ -44,31 +44,31 @@ function CartDrawer({ cart, setCart, currency, onClose, onCheckout }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/50 fade-in" onClick={onClose}>
       <div
-        className="absolute top-0 bottom-0 left-0 sm:left-auto sm:right-0 w-full sm:w-[420px] bg-white slide-in flex flex-col"
+        className="absolute top-0 bottom-0 left-0 sm:left-auto sm:right-0 w-full sm:w-[420px] bg-surface text-main slide-in flex flex-col"
         style={{ animationName: "slideIn" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="samaq-gradient-header text-white px-5 py-4 flex items-center justify-between">
-          <h2 className="font-extrabold text-lg">سلة الطلبات</h2>
-          <button onClick={onClose}><IconClose className="w-5 h-5" /></button>
+        <div className="samaq-sheet-header px-5 py-4 flex items-center justify-between">
+          <h2 className="font-extrabold text-lg title">سلة الطلبات</h2>
+          <button onClick={onClose} className="samaq-text-muted"><IconClose className="w-5 h-5" /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
           {cart.length === 0 && (
-            <div className="text-center text-gray-400 py-16">
+            <div className="text-center samaq-text-muted py-16">
               <IconCart className="w-10 h-10 mx-auto mb-2 opacity-40" />
               السلة فاضية دلوقتي
             </div>
           )}
           {cart.map((l) => (
-            <div key={l.lineId} className="border border-gray-100 rounded-2xl p-3">
+            <div key={l.lineId} className="samaq-card-surface rounded-2xl p-3">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h4 className="font-bold text-sm text-[#173a2a]">{l.name}</h4>
+                  <h4 className="font-bold text-sm text-main">{l.name}</h4>
                   {l.optionsSummary && l.optionsSummary.length > 0 && (
-                    <p className="text-xs text-gray-500 mt-1">{l.optionsSummary.join(" · ")}</p>
+                    <p className="text-xs samaq-text-muted mt-1">{l.optionsSummary.join(" · ")}</p>
                   )}
-                  {l.notes && <p className="text-xs text-gray-400 mt-1">ملاحظة: {l.notes}</p>}
+                  {l.notes && <p className="text-xs samaq-text-muted mt-1">ملاحظة: {l.notes}</p>}
                 </div>
                 <button onClick={() => removeLine(l.lineId)} className="text-red-400 hover:text-red-600 shrink-0">
                   <IconTrash className="w-4 h-4" />
@@ -76,9 +76,9 @@ function CartDrawer({ cart, setCart, currency, onClose, onCheckout }) {
               </div>
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2">
-                  <button onClick={() => updateQty(l.lineId, -1)} className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center"><IconMinus className="w-3.5 h-3.5" /></button>
-                  <span className="w-5 text-center text-sm font-bold">{l.qty}</span>
-                  <button onClick={() => updateQty(l.lineId, 1)} className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center"><IconPlus className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => updateQty(l.lineId, -1)} className="w-7 h-7 rounded-full bg-surface border border-theme flex items-center justify-center"><IconMinus className="w-3.5 h-3.5" /></button>
+                  <span className="w-5 text-center text-sm font-bold text-main">{l.qty}</span>
+                  <button onClick={() => updateQty(l.lineId, 1)} className="w-7 h-7 rounded-full bg-surface border border-theme flex items-center justify-center"><IconPlus className="w-3.5 h-3.5" /></button>
                 </div>
                 <span className="text-samaq-green font-bold text-sm">{formatPrice(l.totalPrice, currency)}</span>
               </div>
@@ -87,9 +87,9 @@ function CartDrawer({ cart, setCart, currency, onClose, onCheckout }) {
         </div>
 
         {cart.length > 0 && (
-          <div className="p-4 border-t">
+          <div className="p-4 border-t border-theme">
             <div className="flex items-center justify-between mb-3">
-              <span className="font-bold text-[#173a2a]">الإجمالي</span>
+              <span className="font-bold text-main">الإجمالي</span>
               <span className="font-extrabold text-samaq-green text-lg">{formatPrice(cartTotal(cart), currency)}</span>
             </div>
             <button onClick={onCheckout} className="w-full bg-samaq-green text-white font-extrabold rounded-2xl py-3 hover:brightness-110 transition">
@@ -180,42 +180,42 @@ function CheckoutForm({ cart, setCart, settings, onClose, onDone }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 fade-in" onClick={onClose}>
-      <div className="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto pop-in" onClick={(e) => e.stopPropagation()}>
-        <div className="samaq-gradient-header text-white px-5 py-4 flex items-center justify-between rounded-t-3xl sm:rounded-t-3xl">
-          <h2 className="font-extrabold text-lg">بيانات الطلب</h2>
-          <button onClick={onClose}><IconClose className="w-5 h-5" /></button>
+      <div className="bg-surface text-main w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto pop-in" onClick={(e) => e.stopPropagation()}>
+        <div className="samaq-sheet-header px-5 py-4 flex items-center justify-between rounded-t-3xl sm:rounded-t-3xl">
+          <h2 className="font-extrabold text-lg title">بيانات الطلب</h2>
+          <button onClick={onClose} className="samaq-text-muted"><IconClose className="w-5 h-5" /></button>
         </div>
         <div className="p-5 flex flex-col gap-4">
           <div>
-            <label className="text-sm font-bold text-[#173a2a] mb-1 block">الاسم</label>
-            <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-samaq-blue" placeholder="اسمك الكامل" />
+            <label className="text-sm font-bold text-main mb-1 block">الاسم</label>
+            <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full border bg-page border-theme rounded-xl p-2.5 text-sm focus:outline-none focus:border-samaq-blue text-main" placeholder="اسمك الكامل" />
           </div>
           <div>
-            <label className="text-sm font-bold text-[#173a2a] mb-1 block">رقم الهاتف</label>
-            <input type="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-samaq-blue" placeholder="05xxxxxxxx" dir="ltr" />
+            <label className="text-sm font-bold text-main mb-1 block">رقم الهاتف</label>
+            <input type="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full border bg-page border-theme rounded-xl p-2.5 text-sm focus:outline-none focus:border-samaq-blue text-main" placeholder="05xxxxxxxx" dir="ltr" />
           </div>
           <div>
-            <label className="text-sm font-bold text-[#173a2a] mb-2 block">طريقة الاستلام</label>
+            <label className="text-sm font-bold text-main mb-2 block">طريقة الاستلام</label>
             <div className="flex gap-2">
-              <button onClick={() => setMethod("delivery")} className={`flex-1 rounded-xl py-2.5 text-sm font-bold border ${method === "delivery" ? "bg-samaq-blue text-white border-samaq-blue" : "border-gray-200 text-gray-600"}`}>توصيل</button>
-              <button onClick={() => setMethod("pickup")} className={`flex-1 rounded-xl py-2.5 text-sm font-bold border ${method === "pickup" ? "bg-samaq-blue text-white border-samaq-blue" : "border-gray-200 text-gray-600"}`}>استلام من الفرع</button>
+              <button onClick={() => setMethod("delivery")} className={`flex-1 rounded-xl py-2.5 text-sm font-bold border ${method === "delivery" ? "bg-samaq-blue text-white border-samaq-blue" : "border-theme samaq-text-muted"}`}>توصيل</button>
+              <button onClick={() => setMethod("pickup")} className={`flex-1 rounded-xl py-2.5 text-sm font-bold border ${method === "pickup" ? "bg-samaq-blue text-white border-samaq-blue" : "border-theme samaq-text-muted"}`}>استلام من الفرع</button>
             </div>
           </div>
           {method === "delivery" && (
             <div>
-              <label className="text-sm font-bold text-[#173a2a] mb-1 block">العنوان</label>
-              <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={2} className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-samaq-blue" placeholder="الحي، الشارع، أقرب معلم" />
+              <label className="text-sm font-bold text-main mb-1 block">العنوان</label>
+              <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={2} className="w-full border bg-page border-theme rounded-xl p-2.5 text-sm focus:outline-none focus:border-samaq-blue text-main" placeholder="الحي، الشارع، أقرب معلم" />
             </div>
           )}
           <div>
-            <label className="text-sm font-bold text-[#173a2a] mb-1 block">ملاحظات (اختياري)</label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-samaq-blue" />
+            <label className="text-sm font-bold text-main mb-1 block">ملاحظات (اختياري)</label>
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="w-full border bg-page border-theme rounded-xl p-2.5 text-sm focus:outline-none focus:border-samaq-blue text-main" />
           </div>
 
           {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
 
           <div className="flex items-center justify-between border-t pt-3">
-            <span className="font-bold text-[#173a2a]">الإجمالي</span>
+            <span className="font-bold text-main">الإجمالي</span>
             <span className="font-extrabold text-samaq-green text-lg">{formatPrice(cartTotal(cart), settings.currency)}</span>
           </div>
 

@@ -1,98 +1,195 @@
 /* ============================================================
-   SAMAQ — Custom Styles
-   الألوان الرسمية من الهوية البصرية:
-   أخضر 118040 / أزرق 006994 / أصفر FFCF40 / أسود 000000 / أبيض FFFFFF
+   SAMAQ — Custom Styles (v3 — نظام ثيم فاتح/داكن)
+   الألوان الرسمية: أخضر 118040 / أزرق 006994 / ذهبي FFCF40
+   الأسلوب مستوحى من تصميم موافق عليه من العميل، بألوان الهوية
+   البصرية لـ SAMAQ بدل الأحمر الأصلي.
    ============================================================ */
 
 :root {
-  --samaq-green: #118040;
-  --samaq-green-dark: #0c5c2e;
-  --samaq-blue: #006994;
-  --samaq-blue-dark: #004f70;
-  --samaq-gold: #FFCF40;
-  --samaq-black: #0b0f0d;
-  --samaq-white: #FFFFFF;
-  --samaq-cream: #F7F8F4;
+  --bg-color: #f7f8f4;
+  --surface-color: #ffffff;
+  --text-main: #16241c;
+  --text-muted: #5c6b62;
+  --primary-color: #118040;
+  --primary-hover: #0c5c2e;
+  --secondary-color: #006994;
+  --accent-color: #ffcf40;
+  --border-color: #e3e8e4;
+  --danger-color: #d32f2f;
+  --success-color: #2e7d32;
+  --shadow-sm: 0 2px 4px rgba(17, 128, 64, 0.06);
+  --shadow-md: 0 4px 14px rgba(17, 128, 64, 0.12);
+  --shadow-lg: 0 10px 28px rgba(17, 128, 64, 0.18);
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 99px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-family: 'Tajawal', 'Cairo', sans-serif;
 }
 
-* { -webkit-tap-highlight-color: transparent; }
+[data-theme="dark"] {
+  --bg-color: #121212;
+  --surface-color: #1e1e1e;
+  --text-main: #ffffff;
+  --text-muted: #b0b0b0;
+  --border-color: #333333;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.55);
+}
+
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
 html, body {
-  font-family: 'Tajawal', 'Cairo', system-ui, sans-serif;
-  background: var(--samaq-cream);
-  color: #1a1a1a;
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-main);
   direction: rtl;
   scroll-behavior: smooth;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 ::-webkit-scrollbar { height: 6px; width: 6px; }
-::-webkit-scrollbar-thumb { background: #c9d2c9; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Brand utility colors (works alongside Tailwind's arbitrary values,
-   kept as classes too for readability in the JSX) */
-.bg-samaq-green { background-color: var(--samaq-green); }
-.bg-samaq-blue { background-color: var(--samaq-blue); }
-.bg-samaq-gold { background-color: var(--samaq-gold); }
-.text-samaq-green { color: var(--samaq-green); }
-.text-samaq-blue { color: var(--samaq-blue); }
-.text-samaq-gold { color: var(--samaq-gold); }
-.border-samaq-green { border-color: var(--samaq-green); }
+/* ---------- Brand utility colors (still used in a few places) ---------- */
+.bg-samaq-green { background-color: var(--primary-color); }
+.bg-samaq-blue { background-color: var(--secondary-color); }
+.bg-samaq-gold { background-color: var(--accent-color); }
+.text-samaq-green { color: var(--primary-color); }
+.text-samaq-blue { color: var(--secondary-color); }
+.text-samaq-gold { color: var(--accent-color); }
+.border-samaq-green { border-color: var(--primary-color); }
 
+/* ---------- Header ---------- */
+.samaq-header {
+  background-color: var(--surface-color);
+  border-bottom: 4px solid var(--primary-color);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+.samaq-logo-text { color: var(--primary-color); }
+
+/* لسه مستخدمة في لوحة تحكم صاحب المطعم (مش جزء من إعادة التصميم دي) */
 .samaq-gradient-header {
-  background: linear-gradient(135deg, var(--samaq-blue) 0%, var(--samaq-blue-dark) 55%, var(--samaq-green-dark) 100%);
+  background: linear-gradient(135deg, var(--secondary-color) 0%, #004f70 55%, var(--primary-hover) 100%);
 }
 
+.theme-toggle {
+  width: 42px; height: 42px; border-radius: 50%;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  transition: var(--transition);
+}
+.theme-toggle:hover { transform: scale(1.06); }
+
+/* ---------- Category pills ---------- */
+.category-pill {
+  background-color: var(--surface-color);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.category-pill[data-active="true"] {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(17, 128, 64, 0.3);
+  transform: translateY(-2px);
+}
+.category-pill[data-active="false"]:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+.category-section-title {
+  color: var(--primary-color);
+  position: relative;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+.category-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 8px; height: 24px;
+  background-color: var(--secondary-color);
+  border-radius: 4px;
+}
+
+/* ---------- Item cards ---------- */
+.item-card {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  position: relative;
+}
+.item-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+.item-card .item-name { color: var(--text-main); }
+.item-card .item-price { color: var(--primary-color); }
+
 .item-image-fallback {
-  background: linear-gradient(160deg, #eaf3ee 0%, #dcebe3 55%, #cfe4d9 100%);
+  background: linear-gradient(160deg, var(--bg-color) 0%, var(--border-color) 100%);
   position: relative;
   overflow: hidden;
 }
 .item-image-fallback::after {
   content: "";
   position: absolute; inset: 0;
-  background-image: radial-gradient(circle at 30% 20%, rgba(0,105,148,0.08), transparent 60%),
-                     radial-gradient(circle at 80% 80%, rgba(17,128,64,0.10), transparent 55%);
+  background-image: radial-gradient(circle at 30% 20%, rgba(0,105,148,0.10), transparent 60%),
+                     radial-gradient(circle at 80% 80%, rgba(17,128,64,0.12), transparent 55%);
 }
 
-.category-pill {
-  transition: all .18s ease;
-  white-space: nowrap;
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background-color: var(--primary-color); color: #fff;
+  transition: var(--transition);
 }
-.category-pill[data-active="true"] {
-  background: var(--samaq-blue);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(0,105,148,.28);
-}
-.category-pill[data-active="false"] {
-  background: #fff;
-  color: #33403a;
-  border: 1px solid #e3e8e4;
-}
-.category-pill[data-active="false"]:hover { border-color: var(--samaq-blue); color: var(--samaq-blue); }
+.btn-primary:hover { background-color: var(--primary-hover); }
 
-.item-card {
-  transition: transform .15s ease, box-shadow .15s ease;
-}
-.item-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(15,40,25,.10); }
-
+/* ---------- Floating cart ---------- */
 .fab-cart {
-  box-shadow: 0 10px 30px rgba(17,128,64,.35);
+  background-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
 }
 
-.slide-in { animation: slideIn .28s ease forwards; }
-@keyframes slideIn {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+/* ---------- Bottom-sheet modals (cart / item / checkout) ---------- */
+.samaq-sheet {
+  background-color: var(--surface-color);
+  color: var(--text-main);
+  box-shadow: var(--shadow-lg);
 }
-.fade-in { animation: fadeIn .2s ease forwards; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.pop-in { animation: popIn .18s ease forwards; }
-@keyframes popIn { from { opacity:0; transform: scale(.96);} to {opacity:1; transform: scale(1);} }
+.samaq-sheet-header {
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+.samaq-sheet-header .title { color: var(--primary-color); }
 
+.samaq-card-surface {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+.samaq-card-surface.selected {
+  border-color: var(--secondary-color);
+  background-color: rgba(0, 105, 148, 0.08);
+}
+
+.dashed-sep { border-top: 1px dashed var(--border-color); }
+
+/* ---------- Theme-aware text/background utilities ---------- */
+.text-main { color: var(--text-main); }
+.samaq-text-muted { color: var(--text-muted); }
+.bg-surface { background-color: var(--surface-color); }
+.bg-page { background-color: var(--bg-color); }
+.border-theme { border-color: var(--border-color); }
+
+/* ---------- Social / footer stays dark always (brand footer) ---------- */
 .social-btn {
   width: 44px; height: 44px; border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
@@ -113,10 +210,17 @@ html, body {
 
 .drag-handle { cursor: grab; }
 .drag-handle:active { cursor: grabbing; }
-.drag-over { outline: 2px dashed var(--samaq-blue); outline-offset: 4px; background: #eef7fb; }
+.drag-over { outline: 2px dashed var(--secondary-color); outline-offset: 4px; }
 
-input[type="text"], input[type="tel"], input[type="number"], input[type="url"], textarea, select {
+input[type="text"], input[type="tel"], input[type="number"], input[type="url"], input[type="password"], textarea, select {
   font-family: inherit;
 }
+
+.fade-in { animation: fadeIn .2s ease forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.pop-in { animation: popIn .18s ease forwards; }
+@keyframes popIn { from { opacity:0; transform: scale(.96);} to {opacity:1; transform: scale(1);} }
+.slide-in { animation: slideIn .28s ease forwards; }
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
 @media print { .no-print { display: none !important; } }

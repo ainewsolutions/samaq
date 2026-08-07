@@ -6,18 +6,18 @@
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-[#F7F8F4]">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-page">
       <img src="assets/samaq-logo.png" alt="" className="w-16 h-16 opacity-80 animate-pulse" />
-      <p className="text-sm text-gray-500 font-bold">جارِ تحميل المنيو...</p>
+      <p className="text-sm samaq-text-muted font-bold">جارِ تحميل المنيو...</p>
     </div>
   );
 }
 
 function ErrorScreen({ message, onRetry }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-[#F7F8F4] px-6 text-center">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-page px-6 text-center">
       <p className="text-red-500 font-bold">تعذر تحميل البيانات</p>
-      <p className="text-xs text-gray-400 max-w-xs">{message}</p>
+      <p className="text-xs samaq-text-muted max-w-xs">{message}</p>
       <button onClick={onRetry} className="bg-samaq-green text-white text-sm font-bold rounded-full px-5 py-2 mt-2">
         إعادة المحاولة
       </button>
@@ -43,6 +43,11 @@ function App() {
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [theme, setTheme] = useState("light"); // "light" | "dark"
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   function load() {
     setStatus("loading");
@@ -77,7 +82,7 @@ function App() {
 
   return (
     <div>
-      <Header cart={cart} onOpenCart={() => setCartOpen(true)} />
+      <Header cart={cart} onOpenCart={() => setCartOpen(true)} theme={theme} onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))} />
       <MenuPage categories={categories} items={items} settings={settings} cart={cart} setCart={setCart} />
       <Footer settings={settings} />
       <FloatingCartButton cart={cart} currency={settings.currency} onOpen={() => setCartOpen(true)} />
