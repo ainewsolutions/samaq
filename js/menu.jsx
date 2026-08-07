@@ -276,7 +276,6 @@ function MenuPage({ categories, items, settings, cart, setCart }) {
           const catItems = items
             .filter((i) => i.categoryId === cat.id)
             .sort((a, b) => (a.order || 0) - (b.order || 0));
-          if (!catItems.length) return null;
           return (
             <section key={cat.id} ref={(el) => (sectionRefs.current[cat.id] = el)} className="pt-6">
               {cat.bannerImage && (
@@ -289,11 +288,17 @@ function MenuPage({ categories, items, settings, cart, setCart }) {
                 {(() => { const Icon = categoryIconFor(cat.name); return <Icon className="w-5 h-5 text-samaq-blue" />; })()}
                 {cat.name}
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {catItems.map((it) => (
-                  <ItemCard key={it.id} item={it} currency={settings.currency} onOpen={setOpenItem} />
-                ))}
-              </div>
+              {catItems.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {catItems.map((it) => (
+                    <ItemCard key={it.id} item={it} currency={settings.currency} onOpen={setOpenItem} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400 text-center py-8 bg-white rounded-2xl border border-[#eef1ee]">
+                  لا يوجد أصناف في هذا التصنيف حاليًا
+                </p>
+              )}
             </section>
           );
         })}

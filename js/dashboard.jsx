@@ -256,11 +256,15 @@ function optionsToAddons(options) {
   if (!options || !options.length || !options[0].choices) return [];
   return options[0].choices.map((c) => ({ label: c.label, priceDelta: c.priceDelta }));
 }
-function addonsToOptions(addons) {
+function optionsMeta(options) {
+  if (!options || !options.length) return { required: false, multiple: true };
+  return { required: !!options[0].required, multiple: options[0].multiple !== false };
+}
+function addonsToOptions(addons, required, multiple) {
   const valid = (addons || []).filter((a) => a.label && a.label.trim());
   if (!valid.length) return [];
   return [{
-    id: "addons", title: "إضافات", required: false, multiple: true,
+    id: "addons", title: required ? "النوع" : "إضافات", required: !!required, multiple: multiple !== false,
     choices: valid.map((a, i) => ({ id: "c" + i, label: a.label.trim(), priceDelta: parseFloat(a.priceDelta) || 0 })),
   }];
 }
@@ -303,12 +307,12 @@ function DashboardItems({ categoryId, items, allItems, setItems }) {
     persist(items.filter((i) => i.id !== id));
   }
   function startAdd() {
-    setEditing({ ...emptyItem(categoryId, items.length + 1), addons: [] });
+    setEditing({ ...emptyItem(categoryId, items.length + 1), addons: [], required: false, multiple: true });
   }
   function saveEdit() {
     if (!editing.name.trim()) return;
-    const { addons, ...rest } = editing;
-    const itemToSave = { ...rest, options: addonsToOptions(addons) };
+    const { addons, required, multiple, ...rest } = editing;
+    const itemToSave = { ...rest, options: addonsToOptions(addons, required, multiple) };
     const exists = items.some((i) => i.id && i.id === itemToSave.id);
     const next = exists ? items.map((i) => (i.id === itemToSave.id ? itemToSave : i)) : [...items, itemToSave];
     persist(next);
@@ -356,7 +360,7 @@ function DashboardItems({ categoryId, items, allItems, setItems }) {
                 )}
               </p>
             </div>
-            <button onClick={() => setEditing({ ...it, addons: optionsToAddons(it.options) })} className="text-gray-400 hover:text-samaq-blue"><IconEdit className="w-4 h-4" /></button>
+            <button onClick={() => setEditing({ ...it, addons: optionsToAddons(it.options), ...optionsMeta(it.options) })} className="text-gray-400 hover:text-samaq-blue"><IconEdit className="w-4 h-4" /></button>
             <label className="inline-flex items-center cursor-pointer">
               <input type="checkbox" checked={it.available} onChange={() => toggleAvailable(it.id)} className="sr-only peer" />
               <div className="w-9 h-5 bg-gray-200 peer-checked:bg-samaq-green rounded-full relative transition">
@@ -389,15 +393,39 @@ function DashboardItems({ categoryId, items, allItems, setItems }) {
 
               <div className="border-t pt-3">
                 <label className="text-xs font-bold text-gray-500 mb-2 block">
-                  إضافات اختيارية (زي: شوي، قلي، متبل) — العميل يقدر يختار أي عدد منها
+                  خيارات إضافية للصنف (إضافات اختيارية زي شوي/قلي/متبل، أو أنواع إجبارية زي سمك/روبيان)
                 </label>
+
+                <div className="flex flex-col gap-1.5 mb-3 bg-gray-50 rounded-xl p-2.5">
+                  <label className="flex items-center gap-2 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={!!editing.required}
+                      onChange={(e) => setEditing({ ...editing, required: e.target.checked })}
+                    />
+                    اختيار إجباري (العميل لازم يختار قبل ما يضيف للسلة) — استخدمها لو الأسعار مختلفة فعليًا حسب النوع
+                  </label>
+                  <label className="flex items-center gap-2 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={editing.multiple !== false}
+                      onChange={(e) => setEditing({ ...editing, multiple: e.target.checked })}
+                    />
+                    يسمح باختيار أكثر من خيار مع بعض (سيبها مفعّلة للإضافات، شيلها للأنواع)
+                  </label>
+                </div>
+
                 <div className="flex flex-col gap-2">
+                  <p className="text-[11px] text-gray-400 -mt-1">
+                    السعر هنا هو <b>الفرق</b> عن السعر الأساسي للصنف، مش السعر الكامل. مثال: لو السعر
+                    الأساسي 22.95 والنوع التاني سعره الكامل 36.95، اكتب هنا 14 بس (الفرق).
+                  </p>
                   {(editing.addons || []).map((a, i) => (
                     <div key={i} className="flex gap-2 items-center">
                       <input
                         value={a.label}
                         onChange={(e) => updateAddon(i, "label", e.target.value)}
-                        placeholder="اسم الإضافة (شوي)"
+                        placeholder="اسم الخيار (شوي / برياني سمك)"
                         className="flex-1 border border-gray-200 rounded-lg p-2 text-sm"
                       />
                       <input
@@ -431,54 +459,6 @@ function DashboardItems({ categoryId, items, allItems, setItems }) {
 }
 
 // ---------------- الطلبات ----------------
-function DashboardOrders({ orders, setOrders, loading }) {
-  async function updateStatus(id, status) {
-    setOrders(orders.map((o) => (o.id === id ? { ...o, status } : o)));
-    try {
-      await DataService.updateOrderStatus(id, status);
-    } catch (err) {
-      alert("تعذر تحديث حالة الطلب: " + err.message);
-    }
-  }
-  const statuses = ["جديد", "جاري التجهيز", "تم"];
-
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 overflow-x-auto">
-      <h3 className="font-bold text-[#173a2a] mb-3">سجل الطلبات</h3>
-      {loading && <p className="text-sm text-gray-400 text-center py-8">جارِ التحميل...</p>}
-      {!loading && orders.length === 0 && <p className="text-sm text-gray-400 text-center py-8">لا توجد طلبات بعد</p>}
-      {!loading && orders.length > 0 && (
-        <table className="w-full text-sm min-w-[640px]">
-          <thead>
-            <tr className="text-right text-gray-400 text-xs border-b">
-              <th className="py-2 font-normal">الوقت</th>
-              <th className="py-2 font-normal">العميل</th>
-              <th className="py-2 font-normal">الأصناف</th>
-              <th className="py-2 font-normal">الإجمالي</th>
-              <th className="py-2 font-normal">الحالة</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((o) => (
-              <tr key={o.id} className="border-b last:border-0">
-                <td className="py-2 whitespace-nowrap">{o.createdAt}</td>
-                <td className="py-2">{o.customerName}<br /><span className="text-xs text-gray-400" dir="ltr">{o.customerPhone}</span></td>
-                <td className="py-2 max-w-[220px] truncate">{o.itemsSummary}</td>
-                <td className="py-2 font-bold text-samaq-green whitespace-nowrap">{Number(o.total).toFixed(2)} ر.س</td>
-                <td className="py-2">
-                  <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)} className="border border-gray-200 rounded-lg text-xs p-1.5">
-                    {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
-}
-
 // ---------------- الإعدادات ----------------
 function DashboardSettings({ settings, setSettings }) {
   const [form, setForm] = useState(settings);
@@ -569,19 +549,16 @@ function Dashboard({ categories, setCategories, items, setItems, settings, setSe
   const [tab, setTab] = useState("overview");
   const [selectedCat, setSelectedCat] = useState(categories[0]?.id || null);
   const [orders, setOrders] = useState([]);
-  const [ordersLoading, setOrdersLoading] = useState(true);
 
   useEffect(() => {
     DataService.getOrders()
       .then(setOrders)
-      .catch((err) => console.warn("تعذر تحميل الطلبات:", err))
-      .finally(() => setOrdersLoading(false));
+      .catch((err) => console.warn("تعذر تحميل الطلبات:", err));
   }, []);
 
   const tabs = [
     { id: "overview", label: "نظرة عامة" },
     { id: "menu", label: "الأصناف والتصنيفات" },
-    { id: "orders", label: "الطلبات" },
     { id: "settings", label: "الإعدادات" },
   ];
 
@@ -611,7 +588,6 @@ function Dashboard({ categories, setCategories, items, setItems, settings, setSe
             selectedCat={selectedCat} setSelectedCat={setSelectedCat}
           />
         )}
-        {tab === "orders" && <DashboardOrders orders={orders} setOrders={setOrders} loading={ordersLoading} />}
         {tab === "settings" && <DashboardSettings settings={settings} setSettings={setSettings} />}
       </div>
     </div>
