@@ -7,6 +7,17 @@ function formatPrice(n, currency) {
   return `${val.toFixed(2)} ${currency || "ر.س"}`;
 }
 
+function categoryEmoji(name) {
+  const n = String(name || "");
+  if (/سمك|روبيان|بحري/.test(n)) return "🐟";
+  if (/مشروب/.test(n)) return "🥤";
+  if (/صلص/.test(n)) return "🥫";
+  if (/كافيار/.test(n)) return "🖤";
+  if (/مجمد/.test(n)) return "❄️";
+  if (/طبخ|طبي/.test(n)) return "👨‍🍳";
+  return "🍽️";
+}
+
 function CategoryTabs({ categories, activeId, onSelect }) {
   return (
     <div className="sticky top-[64px] z-30 bg-[#F7F8F4]/95 backdrop-blur border-b border-[#e7ece8]">
@@ -16,9 +27,10 @@ function CategoryTabs({ categories, activeId, onSelect }) {
             key={c.id}
             data-active={c.id === activeId}
             onClick={() => onSelect(c.id)}
-            className="category-pill px-4 py-2 rounded-full text-sm font-bold shrink-0"
+            className="category-pill px-4 py-2 rounded-full text-sm font-bold shrink-0 flex items-center gap-1.5"
           >
-            {c.name}
+            <span>{categoryEmoji(c.name)}</span>
+            <span>{c.name}</span>
           </button>
         ))}
       </div>
@@ -40,16 +52,16 @@ function ItemImage({ item, className }) {
 function ItemCard({ item, currency, onOpen }) {
   const hasOptions = item.options && item.options.length > 0;
   return (
-    <div className="item-card bg-white rounded-2xl overflow-hidden border border-[#eef1ee] flex flex-col">
-      <div className="relative">
-        <ItemImage item={item} className="w-full h-32 sm:h-36 object-cover" />
+    <div className="item-card bg-white rounded-2xl overflow-hidden border border-[#eef1ee] flex sm:flex-col">
+      <div className="relative w-32 sm:w-full shrink-0 bg-[#eef3ee]">
+        <ItemImage item={item} className="w-full h-full sm:h-40 aspect-square sm:aspect-auto object-contain" />
         {!item.available && (
           <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-            <span className="bg-black/80 text-white text-xs px-3 py-1 rounded-full">غير متاح حاليًا</span>
+            <span className="bg-black/80 text-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full">غير متاح حاليًا</span>
           </div>
         )}
       </div>
-      <div className="p-3 flex flex-col gap-1 flex-1">
+      <div className="p-3 flex flex-col gap-1 flex-1 min-w-0">
         <h3 className="font-bold text-[#173a2a] text-sm leading-snug line-clamp-2">{item.name}</h3>
         {item.description && <p className="text-xs text-gray-500 line-clamp-2">{item.description}</p>}
         <div className="mt-auto pt-2 flex items-center justify-between">
@@ -148,7 +160,7 @@ function ItemModal({ item, currency, onClose, onAdd }) {
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 fade-in" onClick={onClose}>
       <div className="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto pop-in" onClick={(e) => e.stopPropagation()}>
         <div className="relative">
-          <ItemImage item={item} className="w-full h-44 object-cover" />
+          <ItemImage item={item} className="w-full h-56 sm:h-52 object-contain bg-[#eef3ee]" />
           <button onClick={onClose} className="absolute top-3 left-3 bg-white/90 rounded-full p-2 shadow">
             <IconClose className="w-4 h-4 text-gray-700" />
           </button>
@@ -252,6 +264,9 @@ function MenuPage({ categories, items, settings, cart, setCart }) {
 
   return (
     <div>
+      <div className="flex justify-center pt-6 pb-2 bg-[#F7F8F4]">
+        <img src="assets/samaq-logo.png" alt="SAMAQ" className="h-24 sm:h-28 w-auto drop-shadow-sm" />
+      </div>
       <CategoryTabs categories={activeCategories} activeId={activeCat} onSelect={scrollToCategory} />
       <div className="max-w-5xl mx-auto px-3 pb-28">
         {activeCategories.map((cat) => {
@@ -268,9 +283,10 @@ function MenuPage({ categories, items, settings, cart, setCart }) {
               )}
               <h2 className="text-lg font-extrabold text-[#173a2a] mb-3 flex items-center gap-2">
                 <span className="w-1.5 h-5 bg-samaq-gold rounded-full inline-block"></span>
+                <span>{categoryEmoji(cat.name)}</span>
                 {cat.name}
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {catItems.map((it) => (
                   <ItemCard key={it.id} item={it} currency={settings.currency} onOpen={setOpenItem} />
                 ))}

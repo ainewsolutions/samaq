@@ -2,7 +2,7 @@
 // SAMAQ — Header & Footer
 // ============================================================
 
-function Header({ cart, onOpenCart, onGoDashboard }) {
+function Header({ cart, onOpenCart }) {
   const count = cartCount(cart);
   return (
     <header className="samaq-gradient-header sticky top-0 z-40 h-16 flex items-center px-4 shadow-md">
@@ -14,17 +14,12 @@ function Header({ cart, onOpenCart, onGoDashboard }) {
             <p className="text-[11px] opacity-80">منتجات بحرية طازجة</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={onOpenCart} className="relative bg-white/15 hover:bg-white/25 transition rounded-full p-2.5">
-            <IconCart className="w-5 h-5 text-white" />
-            {count > 0 && (
-              <span className="absolute -top-1 -left-1 bg-samaq-gold text-[#173a2a] text-[10px] font-extrabold rounded-full w-4 h-4 flex items-center justify-center">{count}</span>
-            )}
-          </button>
-          <button onClick={onGoDashboard} title="لوحة التحكم" className="bg-white/10 hover:bg-white/20 transition rounded-full p-2.5">
-            <IconGear className="w-5 h-5 text-white/80" />
-          </button>
-        </div>
+        <button onClick={onOpenCart} className="relative bg-white/15 hover:bg-white/25 transition rounded-full p-2.5">
+          <IconCart className="w-5 h-5 text-white" />
+          {count > 0 && (
+            <span className="absolute -top-1 -left-1 bg-samaq-gold text-[#173a2a] text-[10px] font-extrabold rounded-full w-4 h-4 flex items-center justify-center">{count}</span>
+          )}
+        </button>
       </div>
     </header>
   );

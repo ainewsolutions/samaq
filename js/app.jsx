@@ -25,6 +25,12 @@ function ErrorScreen({ message, onRetry }) {
   );
 }
 
+// هل الرابط فيه ?admin؟ (ده الطريقة الوحيدة اللي بتظهر بيها لوحة
+// التحكم — مفيش أي زرار أو أيقونة ظاهرة للعميل في صفحة المنيو خالص)
+function isAdminEntry() {
+  return new URLSearchParams(window.location.search).has("admin");
+}
+
 function App() {
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [errorMsg, setErrorMsg] = useState("");
@@ -33,7 +39,7 @@ function App() {
   const [settings, setSettings] = useState({});
 
   const [view, setView] = useState("menu"); // "menu" | "dashboard"
-  const [showLogin, setShowLogin] = useState(false);
+  const [showLogin, setShowLogin] = useState(isAdminEntry);
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -71,7 +77,7 @@ function App() {
 
   return (
     <div>
-      <Header cart={cart} onOpenCart={() => setCartOpen(true)} onGoDashboard={() => setShowLogin(true)} />
+      <Header cart={cart} onOpenCart={() => setCartOpen(true)} />
       <MenuPage categories={categories} items={items} settings={settings} cart={cart} setCart={setCart} />
       <Footer settings={settings} />
       <FloatingCartButton cart={cart} currency={settings.currency} onOpen={() => setCartOpen(true)} />
@@ -99,7 +105,12 @@ function App() {
       {showLogin && (
         <LoginModal
           onClose={() => setShowLogin(false)}
-          onSuccess={() => { setShowLogin(false); setView("dashboard"); }}
+          onSuccess={() => {
+            setShowLogin(false);
+            setView("dashboard");
+            // ننضّف الرابط من ?admin بعد الدخول عشان يفضل مظهره عادي
+            window.history.replaceState(null, "", window.location.pathname);
+          }}
         />
       )}
     </div>
